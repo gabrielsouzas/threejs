@@ -152,15 +152,54 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
  * Animate
  */
 
+// Listener que verifica o movimento do mouse
+document.addEventListener('mousemove', onDocumentMouseMove)
+
+// Variaveis para controle da posição do mouse
+let mouseX = 0
+let mouseY = 0
+
+// Variaveis para controle da posição do target
+let targetX = 0
+let targetY = 0
+
+// Variáveis com a metade dos tamanhos da tela
+const windowHalfX = window.innerWidth / 2;
+const windowHalfY = window.innerHeight / 2;
+
+// Função do movimento do mouse na tela que passa o event como parametro
+function onDocumentMouseMove(event) {
+    // As variaveis de controle de posição do mouse recebem a posição do mouse menoa a metade da tela
+    mouseX = (event.clientX - windowHalfX)
+    mouseY = (event.clientY - windowHalfY)
+}
+
+// Cria tipo um efeito de parallax
+const updateSphere = (event) => {
+    sphere.position.y = window.scrollY * .001
+}
+
+// Evento para quando for rolada a tela
+window.addEventListener('scroll', updateSphere)
+
 const clock = new THREE.Clock()
 
 const tick = () =>
 {
 
+    // Faz os targets receberem a posição do mouse X .001
+    targetX = mouseX * .001
+    targetY = mouseY * .001
+
     const elapsedTime = clock.getElapsedTime()
 
     // Update objects
     sphere.rotation.y = .5 * elapsedTime
+
+    // Faz a rotação da esfera no eixo y, x e z receber .5 vezes o target - a rotação atual da esfera
+    sphere.rotation.y += .5 * (targetX - sphere.rotation.y)
+    sphere.rotation.x += .05 * (targetY - sphere.rotation.x)
+    sphere.position.z += .05 * (targetY - sphere.rotation.x)
 
     // Update Orbital Controls
     // controls.update()
